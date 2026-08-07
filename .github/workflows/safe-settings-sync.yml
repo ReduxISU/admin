@@ -39,6 +39,16 @@ jobs:
       - run: npm install
         working-directory: ${{ env.SAFE_SETTINGS_DIR }}
 
+      # Do not remove. safe-settings 2.1.19 bumped probot to ^14 without updating its own code.
+      # probot 14 builds the logger in a lazy async init, so `probot.log` is null until then
+      # (probot.js: `log: options.log || null`), while full-sync.js calls probot.log.info() on the
+      # line after createProbot() and lib/* call robot.log.trace() the same way. Every run dies at
+      # once with "Cannot read properties of null (reading 'info')". Upstream has not fixed it —
+      # full-sync.js is byte-identical from 2.1.18 through HEAD. Pin probot back to the last
+      # version the code actually expects; drop this step once upstream awaits initialization.
+      - run: npm install probot@13.4.7
+        working-directory: ${{ env.SAFE_SETTINGS_DIR }}
+
       - run: npm run full-sync
         working-directory: ${{ env.SAFE_SETTINGS_DIR }}
         env:

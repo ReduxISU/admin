@@ -57,3 +57,12 @@ The App needs repo **Administration: read & write**, repo **Metadata: read**, re
 **Contents: read**, org **Members: read**, and must be installed on every repo it manages.
 It does **not** need org Administration — that is only required for organization-level
 rulesets, which this config deliberately avoids so it works on any GitHub plan.
+
+## Known upstream issue
+
+The sync workflow downgrades probot to 13.4.7 after installing safe-settings. This is load-bearing:
+safe-settings 2.1.19 bumped its probot dependency to ^14, which builds its logger in a lazy async
+init, but never updated the code that calls `probot.log` synchronously right after `createProbot()`.
+Without the pin every run fails immediately with `Cannot read properties of null (reading 'info')`.
+Verified against 2.1.21 and unchanged upstream as of the last check. Remove the pin only after
+confirming `full-sync.js` awaits initialization.
