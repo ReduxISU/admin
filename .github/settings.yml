@@ -1,28 +1,8 @@
-# Org-wide defaults for ReduxISU. Applies to every repo the sync manages, including repos
-# created later. Per-repo overrides live in repos/<name>.yml and merge by ruleset `name`.
+# Intentionally no org-level settings. The ruleset lives in suborgs/all-repos.yml.
 #
-# No `conditions.repository_name` here on purpose: that key is what promotes a safe-settings
-# ruleset to an *organization* ruleset, which requires a GitHub Enterprise plan. Without it,
-# safe-settings writes an ordinary repository ruleset into each repo, which works on any plan.
-
-rulesets:
-  - name: require-reviewed-pr
-    target: branch
-    enforcement: active
-
-    conditions:
-      ref_name:
-        include: ["~DEFAULT_BRANCH"]
-        exclude: []
-
-    rules:
-      # Presence of this rule is "require a pull request before merging"; the count is the
-      # reviewer requirement. The remaining knobs are written out explicitly, and off, so the
-      # next person can see what was consciously left alone.
-      - type: pull_request
-        parameters:
-          required_approving_review_count: 1
-          dismiss_stale_reviews_on_push: false
-          require_code_owner_review: false
-          require_last_push_approval: false
-          required_review_thread_resolution: false
+# Do not move it back here. A `rulesets:` block in THIS file is created as an *organization*
+# ruleset — lib/settings.js hardcodes SCOPE.ORG for the org config and strips `rulesets` before
+# cascading to repos. That path needs the App to hold org Administration: write, and org rulesets
+# additionally require a Team/Enterprise plan. Rulesets in suborgs/*.yml and repos/*.yml are
+# repo-scoped, which is what we want.
+{}

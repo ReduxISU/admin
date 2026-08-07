@@ -1,0 +1,31 @@
+# The baseline every managed repo gets. `*` is glob-matched against the repo name, so repos
+# created later are covered on the next sync with no edit here.
+#
+# Rulesets defined in a suborg (or repo) file are repo-scoped: safe-settings' Rulesets plugin
+# defaults to scope "repo", and only the org settings.yml forces org scope. That keeps this
+# working on any GitHub plan and needs only repo Administration: write.
+
+suborgrepos:
+  - "*"
+
+rulesets:
+  - name: require-reviewed-pr
+    target: branch
+    enforcement: active
+
+    conditions:
+      ref_name:
+        include: ["~DEFAULT_BRANCH"]
+        exclude: []
+
+    rules:
+      # Presence of this rule is "require a pull request before merging"; the count is the
+      # reviewer requirement. The remaining knobs are written out explicitly, and off, so the
+      # next person can see what was consciously left alone.
+      - type: pull_request
+        parameters:
+          required_approving_review_count: 1
+          dismiss_stale_reviews_on_push: false
+          require_code_owner_review: false
+          require_last_push_approval: false
+          required_review_thread_resolution: false

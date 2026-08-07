@@ -24,14 +24,22 @@ targets the `~DEFAULT_BRANCH` special ref rather than a literal name.
 ## Layout
 
 ```
-.github/settings.yml              org-wide defaults — applies to every managed repo
-.github/repos/<Repo>.yml          per-repo overrides, merged into the above by ruleset `name`
+.github/suborgs/all-repos.yml     the baseline ruleset; `*` matches every repo
+.github/repos/<Repo>.yml          per-repo overrides, merged in by ruleset `name`
+.github/settings.yml              org-level config — deliberately empty, see below
 deployment-settings.yml           which repos the sync may touch
 .github/workflows/                the scheduled sync
 ```
 
-Precedence is repo > org. A `repos/<Repo>.yml` entry whose ruleset `name` matches one in
-`settings.yml` merges into it; a new name is added alongside.
+Precedence is repo > suborg > org. A `repos/<Repo>.yml` entry whose ruleset `name` matches the
+suborg baseline merges into it; a new name is added alongside.
+
+**The ruleset lives in `suborgs/`, not `settings.yml`, and that placement is load-bearing.**
+safe-settings hardcodes `SCOPE.ORG` for rulesets in the org `settings.yml` and strips them before
+cascading to repos — so a ruleset there is POSTed to `/orgs/{org}/rulesets` as an *organization*
+ruleset, which requires the App to hold org Administration: write **and** a Team/Enterprise plan.
+Rulesets in `suborgs/*.yml` and `repos/*.yml` are repo-scoped (`/repos/{owner}/{repo}/rulesets`),
+which works on any plan and allows the per-repo bypass above.
 
 ## Making a change
 
@@ -53,8 +61,16 @@ The sync authenticates as a GitHub App owned by the org. It needs, on this repo:
 - variable `SAFE_SETTINGS_APP_ID`
 - secret `SAFE_SETTINGS_PRIVATE_KEY` — the App's `.pem`, in full
 
-The App needs repo **Administration: read & write**, repo **Metadata: read**, repo
-**Contents: read**, org **Members: read**, and must be installed on every repo it manages.
+The App needs repo **Administration: read & write**, repo **Checks: read & write**, repo
+**Metadata: read**, repo **Contents: read**, org **Members: read**, and must be installed on
+every repo it manages —
+**plus `admin` itself**, which it reads this config from. `admin` appears in
+`deployment-settings.yml` so it is never *managed*; that is separate from needing to *read* it.
+
+Install the App on the **ReduxISU org only**. `syncInstallation` in safe-settings takes
+`installations[0]` — the first installation, unfiltered — so an extra installation on a personal
+account can silently make the sync target the wrong place. The `GH_ORG` env var does not prevent
+this: it appears in upstream's docs but is referenced nowhere in the code, so it selects nothing.
 It does **not** need org Administration — that is only required for organization-level
 rulesets, which this config deliberately avoids so it works on any GitHub plan.
 
