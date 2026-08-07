@@ -1,0 +1,13 @@
+# Which repos the sync is allowed to touch. Referenced by DEPLOYMENT_CONFIG_FILE in
+# .github/workflows/safe-settings-sync.yml.
+#
+# `exclude` is a denylist: every repo not listed is managed, so new repos are covered
+# automatically with no edit here. Do NOT switch this to `include` — that key is an allowlist
+# and it short-circuits `exclude` entirely (see isRestricted in safe-settings' lib/settings.js),
+# so new repos would silently stop being protected.
+restrictedRepos:
+  exclude:
+    # This repo. Excluded so a bad policy commit can always be fixed by pushing directly here —
+    # the org ruleset has no bypass, so a self-managed admin repo could deadlock.
+    - admin
+    - mcpredux

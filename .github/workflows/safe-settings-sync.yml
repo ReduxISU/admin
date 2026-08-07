@@ -1,0 +1,50 @@
+name: safe-settings sync
+
+# Applies .github/settings.yml + .github/repos/*.yml to every repo in the org.
+# There is no webhook in this deployment, so config changes take effect on the next run —
+# use "Run workflow" after a policy commit rather than waiting for the cron.
+
+on:
+  schedule:
+    - cron: "0 */4 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: safe-settings-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      SAFE_SETTINGS_VERSION: "2.1.21"
+      SAFE_SETTINGS_DIR: ${{ github.workspace }}/.safe-settings-code
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        with:
+          repository: github-community-projects/safe-settings
+          ref: ${{ env.SAFE_SETTINGS_VERSION }}
+          path: ${{ env.SAFE_SETTINGS_DIR }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - run: npm install
+        working-directory: ${{ env.SAFE_SETTINGS_DIR }}
+
+      - run: npm run full-sync
+        working-directory: ${{ env.SAFE_SETTINGS_DIR }}
+        env:
+          GH_ORG: ${{ vars.SAFE_SETTINGS_GH_ORG }}
+          APP_ID: ${{ vars.SAFE_SETTINGS_APP_ID }}
+          PRIVATE_KEY: ${{ secrets.SAFE_SETTINGS_PRIVATE_KEY }}
+          ADMIN_REPO: admin
+          CONFIG_PATH: .github
+          DEPLOYMENT_CONFIG_FILE: ${{ github.workspace }}/deployment-settings.yml

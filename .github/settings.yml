@@ -1,0 +1,28 @@
+# Org-wide defaults for ReduxISU. Applies to every repo the sync manages, including repos
+# created later. Per-repo overrides live in repos/<name>.yml and merge by ruleset `name`.
+#
+# No `conditions.repository_name` here on purpose: that key is what promotes a safe-settings
+# ruleset to an *organization* ruleset, which requires a GitHub Enterprise plan. Without it,
+# safe-settings writes an ordinary repository ruleset into each repo, which works on any plan.
+
+rulesets:
+  - name: require-reviewed-pr
+    target: branch
+    enforcement: active
+
+    conditions:
+      ref_name:
+        include: ["~DEFAULT_BRANCH"]
+        exclude: []
+
+    rules:
+      # Presence of this rule is "require a pull request before merging"; the count is the
+      # reviewer requirement. The remaining knobs are written out explicitly, and off, so the
+      # next person can see what was consciously left alone.
+      - type: pull_request
+        parameters:
+          required_approving_review_count: 1
+          dismiss_stale_reviews_on_push: false
+          require_code_owner_review: false
+          require_last_push_approval: false
+          required_review_thread_resolution: false

@@ -1,0 +1,30 @@
+# Same ruleset as the org default, plus an admin bypass. rbs is the CI/CD hub every other
+# repo's pipeline calls, so a wedged build system blocks all of them at once.
+#
+# Written as a full copy rather than a bypass_actors-only delta: safe-settings merges arrays by
+# `name`, so either form works, but a partial ruleset that lost its `rules` block would silently
+# become an unprotected branch. This way the file reads correctly on its own.
+
+rulesets:
+  - name: require-reviewed-pr
+    target: branch
+    enforcement: active
+
+    bypass_actors:
+      - actor_id: 1
+        actor_type: OrganizationAdmin
+        bypass_mode: always
+
+    conditions:
+      ref_name:
+        include: ["~DEFAULT_BRANCH"]
+        exclude: []
+
+    rules:
+      - type: pull_request
+        parameters:
+          required_approving_review_count: 1
+          dismiss_stale_reviews_on_push: false
+          require_code_owner_review: false
+          require_last_push_approval: false
+          required_review_thread_resolution: false
