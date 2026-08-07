@@ -1,0 +1,10 @@
+# Admin bypass. Internal single-maintainer repo under fast iteration — same case as
+# Redux_Build_System. Revisit once it takes outside contributors.
+#
+# Delta only — see Redux_Build_System.yml for why the ruleset is not restated here.
+rulesets:
+  - name: require-reviewed-pr
+    bypass_actors:
+      - actor_id: 1
+        actor_type: OrganizationAdmin
+        bypass_mode: always

@@ -17,6 +17,7 @@ targets the `~DEFAULT_BRANCH` special ref rather than a literal name.
 | `Redux_GUI` | yes | no |
 | `quantumsolver` | yes | no |
 | `Redux_Build_System` | yes | **yes** — org admins can merge without review |
+| `Redux_VR` | yes | **yes** — same, internal single-maintainer repo |
 | `mcpredux` | no | — |
 | `admin` (this repo) | no | — |
 | *any new repo* | yes, automatically | no |
