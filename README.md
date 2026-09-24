@@ -11,16 +11,21 @@ Every managed repo's **default branch** requires a pull request with **1 approvi
 Default branch names differ across the org (`CSharpAPI`, `ReduxAPI_GUI`, `main`), so the rule
 targets the `~DEFAULT_BRANCH` special ref rather than a literal name.
 
-| Repo | Covered | Admin bypass |
-|---|:---:|:---:|
-| `Redux` | yes | no |
-| `Redux_GUI` | yes | no |
-| `quantumsolver` | yes | no |
-| `Redux_Build_System` | yes | **yes** — org admins can merge without review |
-| `Redux_VR` | yes | **yes** — same, internal single-maintainer repo |
-| `mcpredux` | no | — |
-| `admin` (this repo) | no | — |
-| *any new repo* | yes, automatically | no |
+| Repo | Covered | Required check | Admin bypass |
+|---|:---:|:---:|:---:|
+| `Redux` | yes | no — `rbs.yml` is still `soft: true` | no |
+| `Redux_GUI` | yes | no — same | no |
+| `quantumsolver` | yes | **`build-test / ci`** (the rbs pipeline) | no |
+| `Redux_Build_System` | yes | no | **yes** — org admins can merge without review |
+| `Redux_VR` | yes | no | **yes** — same, internal single-maintainer repo |
+| `mcpredux` | no | — | — |
+| `admin` (this repo) | no | — | — |
+| *any new repo* | yes, automatically | no | no |
+
+A required check is only meaningful over a workflow that can fail. Redux and Redux_GUI call the
+rbs workflow with `soft: true`, which reports without failing, so requiring their check would gate
+nothing; each gets the rule in `repos/<Repo>.yml` when it drops `soft`, and once all three have it
+the rule moves into `suborgs/all-repos.yml`.
 
 ## Layout
 
