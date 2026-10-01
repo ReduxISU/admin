@@ -1,22 +1,19 @@
-# Require the rbs pipeline to pass before a PR can merge. quantumsolver is the first repo whose
-# `rbs ci` is a hard gate and the only publisher, so a green check here means every gate passed
-# against the exact image that will ship. Redux_GUI has the same rule; Redux gets it once it drops
-# `soft: true`, and then this moves to suborgs/all-repos.yml.
+# Require the rbs pipeline to pass before a PR can merge. Redux_GUI's `rbs ci` is a hard gate and
+# its only publisher, so a green check here means every gate passed against the exact image that
+# will ship. Same rule as quantumsolver.yml; once Redux has it too this moves to
+# suborgs/all-repos.yml.
 #
 # Delta only — the pull_request rule comes from suborgs/all-repos.yml; rules merge in by
 # ruleset `name` and this appends one rule to it (see Redux_Build_System.yml).
 #
 # `context` is the check-run name GitHub derives from the caller job + reusable job
-# (`build-test:` in quantumsolver's rbs.yml calling job `ci` in the hub's ci.yml). Renaming either
+# (`build-test:` in Redux_GUI's rbs.yml calling job `ci` in the hub's ci.yml). Renaming either
 # job silently makes this check unsatisfiable and blocks every PR — change both together.
 rulesets:
   - name: require-reviewed-pr
     rules:
       - type: required_status_checks
         parameters:
-          # Merging does not require the branch to be current with main first; the PR's own
-          # run already tests the merge commit, and a 5-minute devcontainer rebuild per rebase
-          # is too much friction for a low-traffic repo.
           strict_required_status_checks_policy: false
           do_not_enforce_on_create: false
           required_status_checks:

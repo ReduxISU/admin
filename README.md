@@ -14,7 +14,7 @@ targets the `~DEFAULT_BRANCH` special ref rather than a literal name.
 | Repo | Covered | Required check | Admin bypass |
 |---|:---:|:---:|:---:|
 | `Redux` | yes | no — `rbs.yml` is still `soft: true` | no |
-| `Redux_GUI` | yes | no — same | no |
+| `Redux_GUI` | yes | **`build-test / ci`** (the rbs pipeline) | no |
 | `quantumsolver` | yes | **`build-test / ci`** (the rbs pipeline) | no |
 | `Redux_Build_System` | yes | no | **yes** — org admins can merge without review |
 | `Redux_VR` | yes | no | **yes** — same, internal single-maintainer repo |
@@ -22,10 +22,10 @@ targets the `~DEFAULT_BRANCH` special ref rather than a literal name.
 | `admin` (this repo) | no | — | — |
 | *any new repo* | yes, automatically | no | no |
 
-A required check is only meaningful over a workflow that can fail. Redux and Redux_GUI call the
-rbs workflow with `soft: true`, which reports without failing, so requiring their check would gate
-nothing; each gets the rule in `repos/<Repo>.yml` when it drops `soft`, and once all three have it
-the rule moves into `suborgs/all-repos.yml`.
+A required check is only meaningful over a workflow that can fail. Redux still calls the rbs
+workflow with `soft: true`, which reports without failing, so requiring its check would gate
+nothing; it gets the rule in `repos/Redux.yml` when it drops `soft`, and once all three have it the
+rule moves into `suborgs/all-repos.yml`.
 
 ## Layout
 
