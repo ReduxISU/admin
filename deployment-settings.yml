@@ -10,4 +10,3 @@ restrictedRepos:
     # This repo. Excluded so a bad policy commit can always be fixed by pushing directly here —
     # the org ruleset has no bypass, so a self-managed admin repo could deadlock.
     - admin
-    - mcpredux

@@ -18,7 +18,7 @@ targets the `~DEFAULT_BRANCH` special ref rather than a literal name.
 | `quantumsolver` | yes | **`build-test / ci`** (the rbs pipeline) | no |
 | `Redux_Build_System` | yes | no | **yes** — org admins can merge without review |
 | `Redux_VR` | yes | no | **yes** — same, internal single-maintainer repo |
-| `mcpredux` | no | — | — |
+| `mcpredux` | yes | **`build-test / ci`** (the rbs pipeline) | no |
 | `admin` (this repo) | no | — | — |
 | *any new repo* | yes, automatically | no | no |
 
